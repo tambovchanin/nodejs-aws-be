@@ -8,20 +8,20 @@ export default handler => async event => {
   }
   let result;
 
-  const answer = (message, statusCode = 200) => ({
+  const answer = (data, statusCode = 200) => ({
     headers,
     statusCode,
-    body: JSON.stringify({ message }),
+    body: JSON.stringify(data),
   });
 
   try {
     result = await handler(event);
   } catch (error) {
     if (error instanceof NotFoundError) {
-      return answer(error.message, error.code);
+      return answer({ message: error.message }, error.code);
     }
 
-    return answer('Internal Service Error', 500);
+    return answer({ message: 'Internal Service Error' }, 500);
   }
 
   return answer(result);
