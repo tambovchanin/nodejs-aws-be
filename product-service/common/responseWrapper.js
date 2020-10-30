@@ -1,26 +1,28 @@
 import NotFoundError from './NotFoundError';
 
+
+
 export default handler => async event => {
+  const headers = {
+    'Access-Control-Allow-Origin': '*',
+  }
   let result;
+
+  const answer = (message, statusCode = 200) => ({
+    headers,
+    statusCode,
+    body: JSON.stringify({ message }),
+  });
 
   try {
     result = await handler(event);
   } catch (error) {
     if (error instanceof NotFoundError) {
-      return {
-        statusCode: error.code,
-        body: JSON.stringify({ message: error.message }),
-      }
+      return answer(error.message, error.code);
     }
 
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ message: 'Internal Service Error' }),
-    }
+    return answer('Internal Service Error', 500);
   }
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify(result),
-  }
+  return answer(result);
 }
