@@ -1,2 +1,1 @@
-
-export default db => async event => db;
+export default db => async event => await db.getProducts();

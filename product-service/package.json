@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "Node.js in AWS Cloud course 2020",
   "main": "handler.js",
-  "dependencies": {},
+  "dependencies": {
+    "pg": "^8.4.2"
+  },
   "devDependencies": {
     "@babel/cli": "^7.12.1",
     "@babel/core": "^7.12.3",

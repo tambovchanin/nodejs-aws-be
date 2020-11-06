@@ -1,10 +1,9 @@
-
 import NotFoundError from '../common/NotFoundError';
 
 export default db => async event => {
-  const id = event.queryStringParameters.id;
+  const { id } = event.queryStringParameters;
 
-  const product = db.find(product => product.id === id);
+  const product = await db.getProductById(id);
 
   if (!product) throw new NotFoundError();
 

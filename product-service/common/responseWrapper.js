@@ -1,6 +1,5 @@
+import DbError from './DbError';
 import NotFoundError from './NotFoundError';
-
-
 
 export default handler => async event => {
   const headers = {
@@ -18,6 +17,10 @@ export default handler => async event => {
     result = await handler(event);
   } catch (error) {
     if (error instanceof NotFoundError) {
+      return answer({ message: error.message }, error.code);
+    }
+
+    if (error instanceof DbError) {
       return answer({ message: error.message }, error.code);
     }
 
