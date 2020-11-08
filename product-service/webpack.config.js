@@ -13,8 +13,8 @@ module.exports = {
     ],
   },
   plugins: [
-		new IgnorePlugin({
-			resourceRegExp: /^pg-native$/,
-		}),
+    new IgnorePlugin({
+      resourceRegExp: /^pg-native$/,
+    }),
   ]
 };
