@@ -38,3 +38,10 @@ functions:
             parameters:
               querystrings:
                 id: true
+  addProduct:
+    handler: handler.addProduct
+    events:
+      - http:
+          path: product
+          method: post
+          cors: true

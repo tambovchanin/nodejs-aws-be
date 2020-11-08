@@ -75,6 +75,76 @@
             "$ref": "#/components/responses/InternalServerError"
           }
         }
+      },
+      "post": {
+        "operationId": "addProduct",
+        "tags": [
+          "Product Service"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+              "application/json": {
+                  "schema": {
+                      "type": "object",
+                      "properties": {
+                          "title": {
+                              "description": "Product title",
+                              "type": "string"
+                          },
+                          "description": {
+                              "description": "Product description",
+                              "type": "string"
+                          },
+                          "price": {
+                            "description": "Product price",
+                            "type": "number"
+                          },
+                          "image": {
+                            "description": "Product Image URL",
+                            "type": "string"
+                          },
+                          "stock": {
+                            "description": "Product stock",
+                            "type": "number"
+                          }
+                      },
+                      "required": [
+                          "title",
+                          "description",
+                          "price",
+                          "image",
+                          "stock"
+                      ],
+                      "example": {
+                          "title": "Test product",
+                          "description": "Some product",
+                          "price": 20,
+                          "image": "https://nikawatches.ru/upload/resize_cache/iblock/1c9/1000_1000_1d7a58ff99b324185ccb5ad5dfbdb5e85/1c9ff48156ca51d176256a47a886b5b9.jpg",
+                          "stock": 5
+                      }
+                  }
+              }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
       }
     }
   },
