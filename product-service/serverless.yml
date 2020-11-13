@@ -10,6 +10,12 @@ provider:
   region: eu-west-1
   profile: sdmAccount
 
+  environment:
+    PG_USER: postgres
+    PG_DATABASE: lesson4
+    PG_INSTANCE: node-aws-course-instance.chsb9nfhbw7v.eu-west-1.rds.amazonaws.com
+    PG_PORT: 5432
+
 plugins:
   - serverless-plugin-webpack
 
@@ -32,3 +38,10 @@ functions:
             parameters:
               querystrings:
                 id: true
+  addProduct:
+    handler: handler.addProduct
+    events:
+      - http:
+          path: product
+          method: post
+          cors: true
