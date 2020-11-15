@@ -3,6 +3,7 @@ import RequestError from './RequestError';
 export default handler => async event => {
   const headers = {
     'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Access-Control-Allow-Origin'
   }
   let result;
 
