@@ -1,6 +1,6 @@
 # Welcome to Serverless!
 #
-service: import-service
+service: import-service-v2
 
 frameworkVersion: '2'
 
@@ -11,20 +11,20 @@ provider:
   profile: sdmAccount
 
   environment:
-    BUCKET_NAME: import-service
+    BUCKET_NAME: import-service-v2
     PARSED_FOLDER: parsed/
     REGION: eu-west-1
     UPLOADED_FOLDER: uploaded/
 
   iamRoleStatements:
-    - Action:
+    - Effect: Allow
+      Action:
         - s3:ListBucket
-      Effect: Allow
       Resource:
         - arn:aws:s3:::${self:provider.environment.BUCKET_NAME}
-    - Action:
+    - Effect: Allow
+      Action:
         - s3:*
-      Effect: Allow
       Resource:
         - arn:aws:s3:::${self:provider.environment.BUCKET_NAME}/*
 
