@@ -5,8 +5,8 @@ service: profuct-service
 frameworkVersion: '2'
 
 custom:
-  snsSubscriptionSingleEndpoint: user1@mail.ru
-  snsSubscriptionMultipleEndpoint: user2@mail.ru
+  snsSubscriptionSingleEndpoint: tambovchanin@list.ru
+  snsSubscriptionOutOfStockEndpoint: tambovchanin@gmail.com
   snsTopicName: createProductTopic
   sqsQueueName: catalogItemsQueue
 
@@ -58,12 +58,12 @@ resources:
     SnsSubscriptionMultiple:
       Type: AWS::SNS::Subscription
       Properties:
-        Endpoint: ${self:custom.snsSubscriptionMultipleEndpoint}
+        Endpoint: ${self:custom.snsSubscriptionOutOfStockEndpoint}
         FilterPolicy:
           numOfProducts:
             - numeric:
-                - ">="
-                - 2
+                - "="
+                - 0
         Protocol: email
         TopicArn:
           Ref: SnsTopic

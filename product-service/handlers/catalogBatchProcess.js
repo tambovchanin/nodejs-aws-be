@@ -35,7 +35,7 @@ export default db => async (event) => {
   console.log('catalogBatchProcess created products', products);
 
   const result = await sns.publish({
-    Message: `Products with the following IDs were created ${products.map(product => product.id).join(', ')}.`,
+    Message: `Products with the following IDs were created ${products.map(product => product.id).join(', ')}`,
     MessageAttributes: {
       numOfProducts: {
         DataType: 'Number',
