@@ -4,6 +4,9 @@ service: import-service-v2
 
 frameworkVersion: '2'
 
+custom:
+  sqsQueueName: catalogItemsQueue
+
 provider:
   name: aws
   runtime: nodejs12.x
@@ -15,6 +18,8 @@ provider:
     PARSED_FOLDER: parsed/
     REGION: eu-west-1
     UPLOADED_FOLDER: uploaded/
+    SQS_QUEUE_URL:
+      Ref: SqsQueue
 
   iamRoleStatements:
     - Effect: Allow
@@ -27,9 +32,26 @@ provider:
         - s3:*
       Resource:
         - arn:aws:s3:::${self:provider.environment.BUCKET_NAME}/*
+    - Effect: Allow
+      Action:
+        - sqs:*
+      Resource:
+        - !GetAtt SqsQueue.Arn
 
 plugins:
   - serverless-plugin-webpack
+
+resources:
+  Resources:
+    SqsQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:custom.sqsQueueName}
+  Outputs:
+    SqsQueueArn:
+      Value: !GetAtt SqsQueue.Arn
+      Export:
+        Name: ${self:custom.sqsQueueName}Arn
 
 functions:
   importProductsFile:

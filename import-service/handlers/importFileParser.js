@@ -6,6 +6,7 @@ const {
   PARSED_FOLDER: parsedFilder,
   REGION: region,
   UPLOADED_FOLDER: uploadedFolder,
+  SQS_QUEUE_URL: sqsQueueUrl,
 } = process.env;
 
 export default async (event) => {
@@ -13,6 +14,7 @@ export default async (event) => {
 
   const { Records: records } = event;
 
+  const sqs = new AwsSdk.SQS();
   const s3 = new AwsSdk.S3({ region });
 
   const moveFilePromises = records.map(async (record) => {
@@ -30,6 +32,17 @@ export default async (event) => {
           .on('error', reject)
           .on('data', data => {
             console.log('importFileParser data', source, data);
+
+            sqs.sendMessage({
+              MessageBody: JSON.stringify(data),
+              QueueUrl: sqsQueueUrl,
+            }, (err, result) => {
+              if (error) {
+                console.error('importFileParser SQS error:', source, err);
+              } else {
+                console.log('importFileParser SQS data:', source, result);
+              }
+            });
           })
           .on('end', () => {
             console.log('importFileParser stream finished', source);
