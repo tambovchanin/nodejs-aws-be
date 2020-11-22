@@ -4,6 +4,12 @@ service: profuct-service
 
 frameworkVersion: '2'
 
+custom:
+  snsSubscriptionSingleEndpoint: user1@mail.ru
+  snsSubscriptionMultipleEndpoint: user2@mail.ru
+  snsTopicName: createProductTopic
+  sqsQueueName: catalogItemsQueue
+
 provider:
   name: aws
   runtime: nodejs12.x
@@ -15,9 +21,54 @@ provider:
     PG_DATABASE: lesson4
     PG_INSTANCE: node-aws-course-instance.chsb9nfhbw7v.eu-west-1.rds.amazonaws.com
     PG_PORT: 5432
+    SNS_TOPIC_ARN:
+      Ref: SnsTopic
+
+  iamRoleStatements:
+    - Action:
+        - sns:*
+      Effect: Allow
+      Resource:
+        - Ref: SnsTopic
+    - Action:
+        - sqs:*
+      Effect: Allow
+      Resource:
+        - !ImportValue ${self:custom.sqsQueueName}Arn
 
 plugins:
   - serverless-plugin-webpack
+
+resources:
+  Resources:
+    SnsSubscriptionSingle:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Endpoint: ${self:custom.snsSubscriptionSingleEndpoint}
+        FilterPolicy:
+          numOfProducts:
+            - numeric:
+                - "<"
+                - 2
+        Protocol: email
+        TopicArn:
+          Ref: SnsTopic
+    SnsSubscriptionMultiple:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Endpoint: ${self:custom.snsSubscriptionMultipleEndpoint}
+        FilterPolicy:
+          numOfProducts:
+            - numeric:
+                - ">="
+                - 2
+        Protocol: email
+        TopicArn:
+          Ref: SnsTopic
+    SnsTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: ${self:custom.snsTopicName}
 
 functions:
   getProductsList:
@@ -45,3 +96,10 @@ functions:
           path: product
           method: post
           cors: true
+  catalogBatchProcess:
+    handler: handler.catalogBatchProcess
+    events:
+      - sqs:
+          batchSize: 5
+          arn:
+            !ImportValue ${self:custom.sqsQueueName}Arn

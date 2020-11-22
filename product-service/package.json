@@ -4,6 +4,7 @@
   "description": "Node.js in AWS Cloud course 2020",
   "main": "handler.js",
   "dependencies": {
+    "aws-sdk": "^2.796.0",
     "pg": "^8.4.2"
   },
   "devDependencies": {
