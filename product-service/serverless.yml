@@ -17,10 +17,11 @@ provider:
   profile: sdmAccount
 
   environment:
-    PG_USER: postgres
-    PG_DATABASE: lesson4
-    PG_INSTANCE: node-aws-course-instance.chsb9nfhbw7v.eu-west-1.rds.amazonaws.com
-    PG_PORT: 5432
+    PG_USER: ${env.PG_USER}
+    PG_DATABASE: ${env.PG_DATABASE}
+    PG_INSTANCE: ${env.PG_INSTANCE}
+    PG_PORT: ${env.PG_PORT}
+    PG_PASS: ${env.PG_PASS}
     SNS_TOPIC_ARN:
       Ref: SnsTopic
 
@@ -38,6 +39,7 @@ provider:
 
 plugins:
   - serverless-plugin-webpack
+  - serverless-dotenv-plugin
 
 resources:
   Resources:
