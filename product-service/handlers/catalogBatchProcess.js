@@ -8,7 +8,9 @@ export default db => async (event) => {
   const sns = new AwsSdk.SNS();
 
   const productsCreated = await Promise.all(event.Records.map(async ({ body }) => {
-    let title, price, image, description, stock;
+    let title, price, image, description, product;
+
+    console.log('catalogBatchProcess add product', body);
 
     try {
       ({ title, price, image, description, stock } = JSON.parse(body));
@@ -20,11 +22,10 @@ export default db => async (event) => {
       return console.error('catalogBatchProcess found invalid data record', body);
     }
 
-    const entity = { title, price, image, description, stock };
-    const product = await db.addProduct(entity);
-
-    if (!product) {
-      return console.error('catalogBatchProcess failed to create product', entity);
+    try {
+      product = await db.addProduct(body);
+    } catch (err) {
+      return console.error('catalogBatchProcess failed to create product', err);
     }
 
     return product;

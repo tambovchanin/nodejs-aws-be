@@ -34,12 +34,12 @@ export default async (event) => {
             console.log('importFileParser data', source, data);
 
             try {
-              await sqs.sendMessage({
+              const sqsData = await sqs.sendMessage({
                 MessageBody: JSON.stringify(data),
                 QueueUrl: sqsQueueUrl,
               }).promise();
 
-              console.log('importFileParser SQS data:', source, data);
+              console.log('importFileParser SQS data:', source, sqsData);
             } catch (err) {
               console.error('importFileParser SQS error:', source, err);
             }
