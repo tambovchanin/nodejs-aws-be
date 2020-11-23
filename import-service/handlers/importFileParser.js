@@ -14,8 +14,8 @@ export default async (event) => {
 
   const { Records: records } = event;
 
-  const sqs = new AwsSdk.SQS();
   const s3 = new AwsSdk.S3({ region });
+  const sqs = new AwsSdk.SQS();
 
   const moveFilePromises = records.map(async (record) => {
     const source = record.s3.object.key;
@@ -30,19 +30,19 @@ export default async (event) => {
           .on('error', reject)
           .pipe(csvParser())
           .on('error', reject)
-          .on('data', data => {
+          .on('data', async (data) => {
             console.log('importFileParser data', source, data);
 
-            sqs.sendMessage({
-              MessageBody: JSON.stringify(data),
-              QueueUrl: sqsQueueUrl,
-            }, (err, result) => {
-              if (error) {
-                console.error('importFileParser SQS error:', source, err);
-              } else {
-                console.log('importFileParser SQS data:', source, result);
-              }
-            });
+            try {
+              await sqs.sendMessage({
+                MessageBody: JSON.stringify(data),
+                QueueUrl: sqsQueueUrl,
+              }).promise();
+
+              console.log('importFileParser SQS data:', source, data);
+            } catch (err) {
+              console.error('importFileParser SQS error:', source, err);
+            }
           })
           .on('end', () => {
             console.log('importFileParser stream finished', source);
@@ -61,7 +61,7 @@ export default async (event) => {
       Key: source,
     }).promise();
 
-    console.log(`importFileParser moved file from ${source} to #{destination}`);
+    console.log(`importFileParser moved file from ${source} to ${destination}`);
   });
 
   await Promise.all(moveFilePromises);

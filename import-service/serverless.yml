@@ -36,7 +36,7 @@ provider:
       Action:
         - sqs:*
       Resource:
-        - !GetAtt SqsQueue.Arn
+        - Fn::GetAtt: [SqsQueue, Arn]
 
 plugins:
   - serverless-plugin-webpack
@@ -49,7 +49,8 @@ resources:
         QueueName: ${self:custom.sqsQueueName}
   Outputs:
     SqsQueueArn:
-      Value: !GetAtt SqsQueue.Arn
+      Value:
+        Fn::GetAtt: [SqsQueue, Arn]
       Export:
         Name: ${self:custom.sqsQueueName}Arn
 

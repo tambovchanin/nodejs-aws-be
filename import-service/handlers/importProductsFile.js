@@ -41,7 +41,7 @@ export default async (event) => {
     Bucket: bucketName,
     ContentType: 'text/csv',
     Key: key,
-    Expires: 30,
+    Expires: 60,
   });
 
   return { signedUrl };
