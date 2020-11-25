@@ -4,7 +4,6 @@ import path from 'path';
 
 import importFileParser from '../handlers/importFileParser';
 
-
 const fixturePath = path.resolve('./__fixtures__/test-import.csv');
 
 it('Parse, copy and delete object', async () => {
@@ -46,11 +45,11 @@ it('Parse, copy and delete object', async () => {
     'importFileParser data',
     'uploaded/key',
     {
-      count: '1',
+      stock: '1',
       description: 'Watch Description 1',
       price: '11',
       title: 'Watch 1',
-      image: 'https://source.unsplash.com/daily/?watch,Description',
+      image: 'https://source.unsplash.com/daily/?watch',
     },
   ]);
 });

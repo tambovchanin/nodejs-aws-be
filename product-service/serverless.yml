@@ -4,6 +4,12 @@ service: profuct-service
 
 frameworkVersion: '2'
 
+custom:
+  snsSubscriptionSingleEndpoint: tambovchanin@list.ru
+  snsSubscriptionOutOfStockEndpoint: tambovchanin@gmail.com
+  snsTopicName: createProductTopic
+  sqsQueueName: catalogItemsQueue
+
 provider:
   name: aws
   runtime: nodejs12.x
@@ -11,13 +17,60 @@ provider:
   profile: sdmAccount
 
   environment:
-    PG_USER: postgres
-    PG_DATABASE: lesson4
-    PG_INSTANCE: node-aws-course-instance.chsb9nfhbw7v.eu-west-1.rds.amazonaws.com
-    PG_PORT: 5432
+    PG_USER: ${env.PG_USER}
+    PG_DATABASE: ${env.PG_DATABASE}
+    PG_INSTANCE: ${env.PG_INSTANCE}
+    PG_PORT: ${env.PG_PORT}
+    PG_PASS: ${env.PG_PASS}
+    SNS_TOPIC_ARN:
+      Ref: SnsTopic
+
+  iamRoleStatements:
+    - Action:
+        - sns:*
+      Effect: Allow
+      Resource:
+        - Ref: SnsTopic
+    - Action:
+        - sqs:*
+      Effect: Allow
+      Resource:
+        - !ImportValue ${self:custom.sqsQueueName}Arn
 
 plugins:
   - serverless-plugin-webpack
+  - serverless-dotenv-plugin
+
+resources:
+  Resources:
+    SnsSubscriptionSingle:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Endpoint: ${self:custom.snsSubscriptionSingleEndpoint}
+        FilterPolicy:
+          numOfProducts:
+            - numeric:
+                - "<"
+                - 2
+        Protocol: email
+        TopicArn:
+          Ref: SnsTopic
+    SnsSubscriptionMultiple:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Endpoint: ${self:custom.snsSubscriptionOutOfStockEndpoint}
+        FilterPolicy:
+          numOfProducts:
+            - numeric:
+                - "="
+                - 0
+        Protocol: email
+        TopicArn:
+          Ref: SnsTopic
+    SnsTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: ${self:custom.snsTopicName}
 
 functions:
   getProductsList:
@@ -45,3 +98,10 @@ functions:
           path: product
           method: post
           cors: true
+  catalogBatchProcess:
+    handler: handler.catalogBatchProcess
+    events:
+      - sqs:
+          batchSize: 5
+          arn:
+            !ImportValue ${self:custom.sqsQueueName}Arn
