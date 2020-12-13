@@ -22,7 +22,7 @@ export class AppController {
       return {
         key: 'product',
         statuses: [ 200 ],
-        ttl: 600, // seconds
+        ttl: 120, // 2 minutes
       };
     }
 
